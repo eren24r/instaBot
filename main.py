@@ -7,11 +7,11 @@ import os
 import io
 
 L = instaloader.Instaloader()
-L.load_session_from_file("eren24r")
-#if not L.load_session_from_file("eren24r"):
-#    L.context.log("Session file does not exist - Logging in.")
-#    L.interactive_login("eren24r")
-#    L.save_session_to_file("eren24r")      
+#L.load_session_from_file("eren24r")
+if not L.load_session_from_file("bb3456b"):
+    L.context.log("Session file does not exist - Logging in.")
+    L.interactive_login("bb3456b")
+    L.save_session_to_file("bb3456b")      
 
 API_ID = 9967216
 API_HASH = "fdee592a12f5c7cf74ab7c9023bcf160"
