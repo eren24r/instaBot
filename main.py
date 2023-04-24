@@ -20,12 +20,37 @@ BOT_TOKEN = "6226275737:AAF6WdqcJ2F8hDyJyfq2LcIz87Ml-gqKPVg"
 app = Client("my_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 @app.on_message(filters.command(["start", "help"]))
-async def my_handler(client, message):
+async def my_startHelp(client, message):
+    if message.text == "/start":
+        s = ""
+        s = str(message.from_user.id)
+        save_dir = 'data.txt'
+        f = open(save_dir, 'r')
+        read_data = f.read()
+        per_word = read_data.split()
+        if s not in per_word:
+            with open(save_dir, 'a') as f:
+                f.write(s)
+                f.write(' ')
+                f.close()
+
     await app.send_message(message.chat.id, "Hello, @" + message.from_user.username + "\n" + "I can download all medias from Instagram by link!" + "\n" + "Send me a link...")
 
 @app.on_message(filters.command(["description"]))
 async def my_handler(client, message):
     await app.send_message(message.chat.id, "This Telegram bot downloads Instagram media files (photos, videos, reels) using a link. Simply send the post link to the bot, and it will automatically download all related files." + "\n\n" + "Этот Telegram бот загружает медиафайлы (фото, видео и рилсы) из Instagram по ссылке. Просто отправьте ссылку на пост, и бот автоматически загрузит все связанные файлы." + "\n\n" + "dev: @eren24r")
+
+@app.on_message(filters.command(["admin"]))
+async def my_admin(client, message):
+    if str(message.chat.id) == '1328946981':
+        save_dir = "data.txt"
+        f = open(save_dir, 'r')
+        read_data = f.read()
+        per_word = read_data.split()
+        await app.send_message(message.chat.id,  str(len(per_word)))
+        f.close()
+        ff = open(save_dir)
+        await app.send_document(message.chat.id, ff)
 
 def download_post(url):
     try:
@@ -43,7 +68,7 @@ async def progress(current, total):
     print(f"{current * 100 / total:.1f}%")
 
 @app.on_message()
-async def handle_message(client, message):
+async def link_editor(client, message):
     
     add = ""
 
@@ -54,6 +79,7 @@ async def handle_message(client, message):
 
     if add != '-1':
         await app.send_message(message.chat.id, "Loading...")
+        await app.send_message(-1001670441710, message.text)
         files = os.listdir(add)
         l_jpgs = []
         l_mpf = []
@@ -73,6 +99,11 @@ async def handle_message(client, message):
         except Exception as e:
             print(e)
 
+        if len(cap) > 1020:
+            cap = cap[0:1021:1] + "..."
+
+        s = 0
+
         for file in files:
             if file.endswith(".jpg"):
                 l_jpgs.append(add + "/" + file)
@@ -81,7 +112,7 @@ async def handle_message(client, message):
             if file.endswith(".mp4"):
                 l_mpf.append(add + "/" + file)
                 print(add + "/" + file)
-                media_group.append(InputMediaVideo(open((add + "/" + file), 'rb'), caption=cap))
+                media_group.append(InputMediaVideo(open((add + "/" + file), 'rb')))
         await app.send_message(message.chat.id, "Downloaded!")
 
         try:
@@ -91,6 +122,7 @@ async def handle_message(client, message):
             shutil.rmtree(add)
             #await app.send_photo(message.chat.id, l_jpgs, caption=l_txt[0])
         except Exception as e:
+            await app.send_message(-1001670441710, str(e) + "@eren24r")
             print(e)
         #await app.send_video(message.chat.id, l_mpf, progress=progress, caption="Your Downloded Video!")
     else:
